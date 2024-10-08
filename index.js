@@ -27,28 +27,24 @@ const main = () => {
         return;
       }
 
-      const openDirPath = path.isAbsolute(dirName)
-        ? dirName
-        : path.join(process.cwd(), dirName);
-
-      fs.stat(openDirPath, (err, stats) => {
-        if (err || !stats.isDirectory()) {
-          console.error(`Operation failed`);
-        } else {
-          try {
-            process.chdir(openDirPath);
-            console.log(`You are currently in ${process.cwd()}\n`);
-          } catch (err) {
-            console.error(`Error: Unable to change to directory '${dirName}'`);
-          }
-        }
-      });
+      try {
+        const openDirPath = path.isAbsolute(dirName)
+          ? dirName
+          : path.join(process.cwd(), dirName);
+        process.chdir(openDirPath);
+        console.log(`You are currently in ${process.cwd()}\n`);
+      } catch (err) {
+        console.error(`Error: Unable to change to directory '${dirName}'`);
+      }
     }
-    console.log(`You are currently in ${process.cwd()}\n`);
+    if (data.includes("ls")) {
+      console.table(fs.readdirSync(process.cwd()));
+    }
 
     if (data.includes(".exit")) {
       exitGracefully();
     }
+    console.log(`You are currently in ${process.cwd()}\n`);
   });
 
   process.on("SIGINT", () => {
