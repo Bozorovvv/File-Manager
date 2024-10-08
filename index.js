@@ -14,6 +14,8 @@ const main = () => {
   };
 
   process.stdin.on("data", async (data) => {
+    console.log(`You are currently in ${process.cwd()}\n`);
+
     if (data.includes("up")) {
       const upperDir = path.join(process.cwd(), "..");
       process.chdir(upperDir);
@@ -38,13 +40,23 @@ const main = () => {
       }
     }
     if (data.includes("ls")) {
-      console.table(fs.readdirSync(process.cwd()));
+      const currentDirectory = process.cwd();
+      const directoryContents = fs.readdirSync(currentDirectory);
+
+      const formattedContents = directoryContents.map((Name) => {
+        const itemPath = path.join(currentDirectory, Name);
+        const Type = fs.lstatSync(itemPath).isDirectory()
+          ? "Directory"
+          : "File";
+        return { Name, Type };
+      });
+
+      console.table(formattedContents);
     }
 
     if (data.includes(".exit")) {
       exitGracefully();
     }
-    console.log(`You are currently in ${process.cwd()}\n`);
   });
 
   process.on("SIGINT", () => {
