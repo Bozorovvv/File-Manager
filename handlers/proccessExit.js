@@ -1,4 +1,4 @@
-export const exitGracefully = (userName) => {
+export const proccessExit = (userName) => {
   console.log(`Thank you for using File Manager, ${userName}, goodbye!`);
   process.exit();
 };
