@@ -1,7 +1,7 @@
 import path from "path";
 import { writeFile, access } from "fs/promises";
 
-export const createFile = (fileName, content = "") => {
+export const createFile = (fileName) => {
   const filePath = path.join(process.cwd(), fileName);
 
   access(filePath)
@@ -10,7 +10,7 @@ export const createFile = (fileName, content = "") => {
     })
     .catch((error) => {
       if (error.code === "ENOENT") {
-        writeFile(filePath, content)
+        writeFile(filePath, "")
           .then(() => {
             console.log("File created successfully!");
           })

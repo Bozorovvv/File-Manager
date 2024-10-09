@@ -6,6 +6,7 @@ import { changeDirectory } from "./handlers/changeDirectory.js";
 import { listDirectoryContents } from "./handlers/listDirectoryContents.js";
 import { proccessExit } from "./handlers/proccessExit.js";
 import { createFile } from "./handlers/createFile.js";
+import { deleteFile } from "./handlers/deleteFile.js";
 
 const processCommand = (data, userName) => {
   const input = data.toString().trim();
@@ -31,6 +32,11 @@ const processCommand = (data, userName) => {
       case "add":
         const newFileName = args.join(" ");
         currentDir = createFile(newFileName);
+        break;
+
+      case "rm":
+        const removefile = args.join(" ");
+        currentDir = deleteFile(removefile);
         break;
       case ".exit":
         proccessExit(userName);
@@ -59,7 +65,7 @@ const main = () => {
 
   process.stdin.on("data", (data) => processCommand(data, userName));
 
-  process.on("SIGINT", () => exitGracefully(userName));
+  process.on("SIGINT", () => proccessExit(userName));
 };
 
 main();
