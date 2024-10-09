@@ -5,6 +5,7 @@ import { goToUpperDirectory } from "./handlers/goToUpperDirectory.js";
 import { changeDirectory } from "./handlers/changeDirectory.js";
 import { listDirectoryContents } from "./handlers/listDirectoryContents.js";
 import { proccessExit } from "./handlers/proccessExit.js";
+import { createFile } from "./handlers/createFile.js";
 
 const processCommand = (data, userName) => {
   const input = data.toString().trim();
@@ -27,9 +28,17 @@ const processCommand = (data, userName) => {
         const fileName = args.join(" ");
         currentDir = readFileStream(fileName);
         break;
+      case "add":
+        const newFileName = args.join(" ");
+        currentDir = createFile(newFileName);
+        break;
       case ".exit":
         proccessExit(userName);
         return;
+      case "clear":
+        console.clear();
+        currentDir = process.cwd();
+        break;
       default:
         console.log("Invalid input");
         currentDir = process.cwd();
