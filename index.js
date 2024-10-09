@@ -1,56 +1,14 @@
-import path from "path";
-import fs from "fs";
-import { callbackWrapper } from "./helpers/callbackWrapper.js";
 import { formatPathForDisplay } from "./helpers/formatPath.js";
-
-const welcomeUser = (userName) => {
-  if (userName) console.log(`Welcome to the File Manager, ${userName}!\n`);
-  console.log(`You are currently in ${formatPathForDisplay(process.cwd())}\n`);
-};
-
-const exitGracefully = (userName) => {
-  console.log(`Thank you for using File Manager, ${userName}, goodbye!`);
-  process.exit();
-};
-
-const goToUpperDirectory = () => {
-  return callbackWrapper(() => {
-    const upperDir = path.join(process.cwd(), "..");
-    process.chdir(upperDir);
-  });
-};
-
-const changeDirectory = (dirName) => {
-  if (!dirName) {
-    console.error("Error: No directory specified.");
-    return process.cwd();
-  }
-
-  return callbackWrapper(() => {
-    const openDirPath = path.isAbsolute(dirName)
-      ? dirName
-      : path.join(process.cwd(), dirName);
-    process.chdir(openDirPath);
-  });
-};
-
-const listDirectoryContents = () => {
-  return callbackWrapper(() => {
-    const currentDirectory = process.cwd();
-    const directoryContents = fs.readdirSync(currentDirectory);
-
-    const formattedContents = directoryContents.map((name) => {
-      const itemPath = path.join(currentDirectory, name);
-      const type = fs.lstatSync(itemPath).isDirectory() ? "Directory" : "File";
-      return { Name: name, Type: type };
-    });
-
-    console.table(formattedContents);
-  });
-};
+import { welcomeUser } from "./handlers/welcomeUser.js";
+import { readFileStream } from "./handlers/readFileStream.js";
+import { goToUpperDirectory } from "./handlers/goToUpperDirectory.js";
+import { changeDirectory } from "./handlers/changeDirectory.js";
+import { listDirectoryContents } from "./handlers/listDirectoryContents.js";
+import { exitGracefully } from "./handlers/exitGracefully.js";
 
 const processCommand = (data, userName) => {
-  const command = data.toString().trim().split(" ")[0];
+  const input = data.toString().trim();
+  const [command, ...args] = input.split(" ");
   let currentDir;
 
   switch (command) {
@@ -58,11 +16,15 @@ const processCommand = (data, userName) => {
       currentDir = goToUpperDirectory();
       break;
     case "cd":
-      const dirName = data.toString().slice(3).trim();
+      const dirName = args.join(" ");
       currentDir = changeDirectory(dirName);
       break;
     case "ls":
       currentDir = listDirectoryContents();
+      break;
+    case "cat":
+      const fileName = args.join(" ");
+      currentDir = readFileStream(fileName);
       break;
     case ".exit":
       exitGracefully(userName);
