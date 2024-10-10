@@ -1,24 +1,16 @@
 import path from "path";
 import { rename, access } from "fs/promises";
 
-export const renameFile = (oldPath, newPath) => {
-  console.log(oldPath, newPath);
-  const oldfilePath = path.join(process.cwd(), oldPath);
-  const newfilePath = path.join(process.cwd(), newPath);
+export const renameFile = async (currentDir, oldPath, newPath) => {
+  try {
+    const oldfilePath = path.join(currentDir, oldPath);
+    const newfilePath = path.join(currentDir, newPath);
 
-  access(oldfilePath)
-    .then(() => {
-      rename(oldfilePath, newfilePath)
-        .then(() => {
-          console.log("File renamed successfully!");
-        })
-        .catch(() => {
-          console.error("Operation failed");
-        });
-    })
-    .catch(() => {
-      console.error("Operation failed");
-    });
+    await access(oldfilePath);
 
-  return process.cwd();
+    await rename(oldfilePath, newfilePath);
+    console.log("File renamed successfully!");
+  } catch (error) {
+    throw error;
+  }
 };

@@ -1,26 +1,13 @@
 import path from "path";
-import { writeFile, access } from "fs/promises";
+import { writeFile } from "fs/promises";
 
-export const createFile = (fileName) => {
-  const filePath = path.join(process.cwd(), fileName);
+export const createFile = async (currentDir, fileName) => {
+  const filePath = path.join(currentDir, fileName);
 
-  access(filePath)
-    .then(() => {
-      console.log("File already exists");
-    })
-    .catch((error) => {
-      if (error.code === "ENOENT") {
-        writeFile(filePath, "")
-          .then(() => {
-            console.log("File created successfully!");
-          })
-          .catch(() => {
-            console.error("Operation failed");
-          });
-      } else {
-        console.error("Operation failed");
-      }
-    });
-
-  return process.cwd();
+  try {
+    await writeFile(filePath, "");
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
 };

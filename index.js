@@ -9,49 +9,56 @@ import { createFile } from "./handlers/createFile.js";
 import { deleteFile } from "./handlers/deleteFile.js";
 import { renameFile } from "./handlers/renameFile.js";
 import { copyFile } from "./handlers/copyFile.js";
+import { moveFile } from "./handlers/moveFile.js";
 
-const processCommand = (data, userName) => {
+const processCommand = async (data, userName) => {
   const input = data.toString().trim();
   const [command, ...args] = input.split(" ");
-  let currentDir;
+  let currentDir = process.cwd();
 
   try {
     switch (command) {
       case "up":
-        currentDir = goToUpperDirectory();
+        currentDir = goToUpperDirectory(currentDir);
         break;
 
       case "cd":
         const dirName = args.join(" ");
-        currentDir = changeDirectory(dirName);
+        currentDir = await changeDirectory(currentDir, dirName);
         break;
 
       case "ls":
-        currentDir = listDirectoryContents();
+        await listDirectoryContents(currentDir);
         break;
+
       case "cat":
         const fileName = args.join(" ");
-        currentDir = readFileStream(fileName);
+        await readFileStream(currentDir, fileName);
         break;
 
       case "add":
         const newFileName = args.join(" ");
-        currentDir = createFile(newFileName);
+        await createFile(currentDir, newFileName);
         break;
 
       case "rm":
         const removefile = args.join(" ");
-        currentDir = deleteFile(removefile);
+        await deleteFile(currentDir, removefile);
         break;
 
       case "rn":
         const [renameOldPath, renameNewPath] = args;
-        currentDir = renameFile(renameOldPath, renameNewPath);
+        await renameFile(currentDir, renameOldPath, renameNewPath);
+        break;
+
+      case "mv":
+        const [movefilePath, moveNewDir] = args;
+        await moveFile(movefilePath, moveNewDir);
         break;
 
       case "cp":
         const [copyOldPath, copyNewPath] = args;
-        currentDir = copyFile(copyOldPath, copyNewPath);
+        await copyFile(copyOldPath, copyNewPath);
         break;
 
       case ".exit":
@@ -60,16 +67,13 @@ const processCommand = (data, userName) => {
 
       case "clear":
         console.clear();
-        currentDir = process.cwd();
         break;
 
       default:
         console.log("Invalid input");
-        currentDir = process.cwd();
     }
   } catch (error) {
-    console.error("Operation failed:", error.message);
-    currentDir = process.cwd();
+    console.error("Operation failed");
   }
 
   console.log(`You are currently in /${formatPathForDisplay(currentDir)}\n`);

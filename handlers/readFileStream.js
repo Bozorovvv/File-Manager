@@ -1,34 +1,23 @@
-import fs from "fs";
 import path from "path";
-import { createReadStream } from "fs";
+import { createReadStream, promises as fs } from "fs";
 import { stdout } from "process";
 
-export const readFileStream = (fileName) => {
-  if (!fileName) {
-    console.error("Error: No file specified.");
-    return process.cwd();
+export const readFileStream = async (currentDir, fileName) => {
+  try {
+    if (!fileName) {
+      throw new Error("No file specified.");
+    }
+
+    const filePath = path.isAbsolute(fileName)
+      ? fileName
+      : path.join(currentDir, fileName);
+
+    await fs.access(filePath);
+
+    const readableFile = createReadStream(filePath, { encoding: "utf-8" });
+
+    readableFile.pipe(stdout);
+  } catch (error) {
+    throw error;
   }
-
-  const filePath = path.isAbsolute(fileName)
-    ? fileName
-    : path.join(process.cwd(), fileName);
-
-  if (!fs.existsSync(filePath)) {
-    console.error("Error: File does not exist.");
-    return process.cwd();
-  }
-
-  if (fs.lstatSync(filePath).isDirectory()) {
-    console.error("Error: The specified path is a directory, not a file.");
-    return process.cwd();
-  }
-
-  const readableFile = createReadStream(filePath, { encoding: "utf-8" });
-
-  readableFile.on("error", (err) => {
-    console.error("Error reading file:", err.message);
-  });
-
-  readableFile.pipe(stdout);
-  return process.cwd();
 };
