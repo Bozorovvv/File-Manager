@@ -1,15 +1,52 @@
+import os from "os";
+import path from "path";
 import { formatPathForDisplay } from "./utils/formatPath.js";
-import { welcomeUser } from "./handlers/welcomeUser.js";
-import { readFileStream } from "./handlers/readFileStream.js";
-import { goToUpperDirectory } from "./handlers/goToUpperDirectory.js";
-import { changeDirectory } from "./handlers/changeDirectory.js";
-import { listDirectoryContents } from "./handlers/listDirectoryContents.js";
-import { proccessExit } from "./handlers/proccessExit.js";
-import { createFile } from "./handlers/createFile.js";
-import { deleteFile } from "./handlers/deleteFile.js";
-import { renameFile } from "./handlers/renameFile.js";
-import { copyFile } from "./handlers/copyFile.js";
-import { moveFile } from "./handlers/moveFile.js";
+import * as handlers from "./handlers/index.js";
+
+const COMMANDS = {
+  UP: "up",
+  CD: "cd",
+  LS: "ls",
+  CAT: "cat",
+  ADD: "add",
+  RM: "rm",
+  RN: "rn",
+  MV: "mv",
+  CP: "cp",
+  OS: "os",
+  EXIT: ".exit",
+};
+
+const OS_FLAGS = {
+  EOL: "--EOL",
+  CPUS: "--cpus",
+  HOMEDIR: "--homedir",
+  USERNAME: "--username",
+  ARCHITECTURE: "--architecture",
+};
+
+const handleOsCommand = (flag) => {
+  switch (flag) {
+    case OS_FLAGS.EOL:
+      console.log(JSON.stringify(os.EOL));
+      break;
+    case OS_FLAGS.CPUS:
+      console.log(os.cpus());
+      break;
+    case OS_FLAGS.HOMEDIR:
+      console.log(os.homedir());
+      break;
+    case OS_FLAGS.USERNAME:
+      console.log(os.userInfo().username);
+      break;
+    case OS_FLAGS.ARCHITECTURE:
+      console.log(os.arch());
+      break;
+
+    default:
+      console.log("Invalid os command");
+  }
+};
 
 const processCommand = async (data, userName) => {
   const input = data.toString().trim();
@@ -18,76 +55,59 @@ const processCommand = async (data, userName) => {
 
   try {
     switch (command) {
-      case "up":
-        currentDir = goToUpperDirectory(currentDir);
+      case COMMANDS.UP:
+        currentDir = handlers.goToUpperDirectory(currentDir);
         break;
-
-      case "cd":
-        const dirName = args.join(" ");
-        currentDir = await changeDirectory(currentDir, dirName);
+      case COMMANDS.CD:
+        currentDir = await handlers.changeDirectory(currentDir, args.join(" "));
         break;
-
-      case "ls":
-        await listDirectoryContents(currentDir);
+      case COMMANDS.LS:
+        await handlers.listDirectoryContents(currentDir);
         break;
-
-      case "cat":
-        const fileName = args.join(" ");
-        await readFileStream(currentDir, fileName);
+      case COMMANDS.CAT:
+        await handlers.readFileStream(currentDir, args.join(" "));
         break;
-
-      case "add":
-        const newFileName = args.join(" ");
-        await createFile(currentDir, newFileName);
+      case COMMANDS.ADD:
+        await handlers.createFile(currentDir, args.join(" "));
         break;
-
-      case "rm":
-        const removefile = args.join(" ");
-        await deleteFile(currentDir, removefile);
+      case COMMANDS.RM:
+        await handlers.deleteFile(currentDir, args.join(" "));
         break;
-
-      case "rn":
-        const [renameOldPath, renameNewPath] = args;
-        await renameFile(currentDir, renameOldPath, renameNewPath);
+      case COMMANDS.RN:
+        await handlers.renameFile(currentDir, args[0], args[1]);
         break;
-
-      case "mv":
-        const [movefilePath, moveNewDir] = args;
-        await moveFile(movefilePath, moveNewDir);
+      case COMMANDS.MV:
+        await handlers.moveFile(args[0], args[1]);
         break;
-
-      case "cp":
-        const [copyOldPath, copyNewPath] = args;
-        await copyFile(copyOldPath, copyNewPath);
+      case COMMANDS.CP:
+        await handlers.copyFile(args[0], args[1]);
         break;
-
-      case ".exit":
-        proccessExit(userName);
+      case COMMANDS.OS:
+        handleOsCommand(args[0]);
+        break;
+      case COMMANDS.EXIT:
+        handlers.processExit(userName);
         return;
-
-      case "clear":
-        console.clear();
-        break;
-
       default:
         console.log("Invalid input");
     }
   } catch (error) {
-    console.error("Operation failed");
+    console.error(`Operation failed: ${error.message}`);
   }
 
-  console.log(`You are currently in /${formatPathForDisplay(currentDir)}\n`);
+  console.log(
+    `You are currently in ${path.sep}${formatPathForDisplay(currentDir)}\n`
+  );
 };
 
 const main = () => {
   const args = process.argv.slice(2);
-  const userName = args?.[0]?.split("=")[1];
+  const userName = args[0]?.split("=")[1];
 
-  welcomeUser(userName);
+  handlers.welcomeUser(userName);
 
   process.stdin.on("data", (data) => processCommand(data, userName));
-
-  process.on("SIGINT", () => proccessExit(userName));
+  process.on("SIGINT", () => handlers.processExit(userName));
 };
 
 main();
