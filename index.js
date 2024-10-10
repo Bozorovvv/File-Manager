@@ -2,51 +2,8 @@ import os from "os";
 import path from "path";
 import { formatPathForDisplay } from "./utils/formatPath.js";
 import * as handlers from "./handlers/index.js";
-
-const COMMANDS = {
-  UP: "up",
-  CD: "cd",
-  LS: "ls",
-  CAT: "cat",
-  ADD: "add",
-  RM: "rm",
-  RN: "rn",
-  MV: "mv",
-  CP: "cp",
-  OS: "os",
-  EXIT: ".exit",
-};
-
-const OS_FLAGS = {
-  EOL: "--EOL",
-  CPUS: "--cpus",
-  HOMEDIR: "--homedir",
-  USERNAME: "--username",
-  ARCHITECTURE: "--architecture",
-};
-
-const handleOsCommand = (flag) => {
-  switch (flag) {
-    case OS_FLAGS.EOL:
-      console.log(JSON.stringify(os.EOL));
-      break;
-    case OS_FLAGS.CPUS:
-      console.log(os.cpus());
-      break;
-    case OS_FLAGS.HOMEDIR:
-      console.log(os.homedir());
-      break;
-    case OS_FLAGS.USERNAME:
-      console.log(os.userInfo().username);
-      break;
-    case OS_FLAGS.ARCHITECTURE:
-      console.log(os.arch());
-      break;
-
-    default:
-      console.log("Invalid os command");
-  }
-};
+import { COMMANDS } from "./utils/commands.js";
+import { handleOsCommand } from "./utils/handleOsCommands.js";
 
 const processCommand = async (data, userName) => {
   const input = data.toString().trim();
