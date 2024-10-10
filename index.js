@@ -8,6 +8,7 @@ import { proccessExit } from "./handlers/proccessExit.js";
 import { createFile } from "./handlers/createFile.js";
 import { deleteFile } from "./handlers/deleteFile.js";
 import { renameFile } from "./handlers/renameFile.js";
+import { copyFile } from "./handlers/copyFile.js";
 
 const processCommand = (data, userName) => {
   const input = data.toString().trim();
@@ -19,10 +20,12 @@ const processCommand = (data, userName) => {
       case "up":
         currentDir = goToUpperDirectory();
         break;
+
       case "cd":
         const dirName = args.join(" ");
         currentDir = changeDirectory(dirName);
         break;
+
       case "ls":
         currentDir = listDirectoryContents();
         break;
@@ -30,6 +33,7 @@ const processCommand = (data, userName) => {
         const fileName = args.join(" ");
         currentDir = readFileStream(fileName);
         break;
+
       case "add":
         const newFileName = args.join(" ");
         currentDir = createFile(newFileName);
@@ -41,16 +45,24 @@ const processCommand = (data, userName) => {
         break;
 
       case "rn":
-        const [oldPath, secondPath] = args;
-        currentDir = renameFile(oldPath, secondPath);
+        const [renameOldPath, renameNewPath] = args;
+        currentDir = renameFile(renameOldPath, renameNewPath);
         break;
+
+      case "cp":
+        const [copyOldPath, copyNewPath] = args;
+        currentDir = copyFile(copyOldPath, copyNewPath);
+        break;
+
       case ".exit":
         proccessExit(userName);
         return;
+
       case "clear":
         console.clear();
         currentDir = process.cwd();
         break;
+
       default:
         console.log("Invalid input");
         currentDir = process.cwd();
