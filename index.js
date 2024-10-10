@@ -7,6 +7,7 @@ import { listDirectoryContents } from "./handlers/listDirectoryContents.js";
 import { proccessExit } from "./handlers/proccessExit.js";
 import { createFile } from "./handlers/createFile.js";
 import { deleteFile } from "./handlers/deleteFile.js";
+import { renameFile } from "./handlers/renameFile.js";
 
 const processCommand = (data, userName) => {
   const input = data.toString().trim();
@@ -37,6 +38,11 @@ const processCommand = (data, userName) => {
       case "rm":
         const removefile = args.join(" ");
         currentDir = deleteFile(removefile);
+        break;
+
+      case "rn":
+        const [oldPath, secondPath] = args;
+        currentDir = renameFile(oldPath, secondPath);
         break;
       case ".exit":
         proccessExit(userName);
