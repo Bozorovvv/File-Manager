@@ -1,4 +1,4 @@
-import { OS_FLAGS } from "./commands";
+import { OS_FLAGS } from "./commands.js";
 
 export const handleOsCommand = (flag) => {
   switch (flag) {

@@ -9,3 +9,6 @@ export { deleteFile } from "./deleteFile.js";
 export { renameFile } from "./renameFile.js";
 export { copyFile } from "./copyFile.js";
 export { moveFile } from "./moveFile.js";
+export { hashFile } from "./hashFile.js";
+export { compressFile } from "./compress.js";
+export { decompressFile } from "./decompress.js";

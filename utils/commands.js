@@ -8,6 +8,9 @@ export const COMMANDS = {
   RN: "rn",
   MV: "mv",
   CP: "cp",
+  HASH: "hash",
+  COMPRESS: "compress",
+  DECOMPRESS: "decompress",
   OS: "os",
   EXIT: ".exit",
 };

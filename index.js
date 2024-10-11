@@ -1,4 +1,3 @@
-import os from "os";
 import path from "path";
 import { formatPathForDisplay } from "./utils/formatPath.js";
 import * as handlers from "./handlers/index.js";
@@ -38,6 +37,15 @@ const processCommand = async (data, userName) => {
         break;
       case COMMANDS.CP:
         await handlers.copyFile(args[0], args[1]);
+        break;
+      case COMMANDS.HASH:
+        handlers.hashFile(args[0]);
+        break;
+      case COMMANDS.COMPRESS:
+        await handlers.compressFile(currentDir, args[0], args[1]);
+        break;
+      case COMMANDS.DECOMPRESS:
+        await handlers.decompressFile(currentDir, args[0], args[1]);
         break;
       case COMMANDS.OS:
         handleOsCommand(args[0]);
