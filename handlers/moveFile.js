@@ -19,6 +19,7 @@ export const moveFile = async (movefilePath, moveNewDir) => {
     const writableFile = createWriteStream(destinationPath);
 
     await pipeline(readableFile, writableFile);
+
     await rm(movefilePath);
   } catch (error) {
     throw error;

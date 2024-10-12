@@ -11,6 +11,7 @@ export const decompressFile = async (currentDir, fileName, destination) => {
     const readableStream = createReadStream(filePath);
     const writeableStream = createWriteStream(destinationPath);
     const brotli = zlib.createBrotliDecompress();
+
     await pipeline(readableStream, brotli, writeableStream);
   } catch (error) {
     throw error;

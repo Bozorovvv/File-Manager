@@ -9,7 +9,6 @@ export const renameFile = async (currentDir, oldPath, newPath) => {
     await access(oldfilePath);
 
     await rename(oldfilePath, newfilePath);
-    console.log("File renamed successfully!");
   } catch (error) {
     throw error;
   }

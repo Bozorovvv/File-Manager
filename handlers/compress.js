@@ -11,6 +11,7 @@ export const compressFile = async (currentDir, fileName, destination) => {
     const readableStream = createReadStream(filePath);
     const writeableStream = createWriteStream(destinationPath);
     const brotli = zlib.createBrotliCompress();
+
     await pipeline(readableStream, brotli, writeableStream);
   } catch (error) {
     throw error;
